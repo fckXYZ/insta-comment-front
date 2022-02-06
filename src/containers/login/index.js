@@ -48,9 +48,7 @@ const Login = (props) => {
 
 				localStorage.setItem("username", username);
 
-				loginSuccess({
-					username, password,
-				})
+				loginSuccess(username, password)
 
 				setLoading(false);
 				navigate(FEED_PATH)
@@ -83,10 +81,7 @@ const Login = (props) => {
 				toast.success(data.message);
 				setModalTwoFaShown(false);
 				setLoading(false);
-				loginSuccess({
-					username: objForSubmit.username,
-					password: '123'
-				})
+				loginSuccess(objForSubmit.username, '123')
 			})
 			.catch((error) => {
 				toast.error(error.body.message);

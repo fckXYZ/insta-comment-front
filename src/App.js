@@ -13,7 +13,7 @@ import Posting from "./containers/posting";
 import Header from "./components/Header";
 import {useEffect, useState} from "react";
 import Login from "./containers/login";
-import {FEED_PATH, LOGIN_PATH} from "./common/routerConstants";
+import {FEED_PATH, LOGIN_PATH, POSTING_PATH} from "./common/routerConstants";
 import {loginUser} from "./helpers/backend_helper";
 import {loginSuccess} from "./store/user/actions";
 import Loader from "./containers/Loader";
@@ -56,13 +56,20 @@ function App(props) {
 								<Route
 									path={FEED_PATH}
 									element={
-										// <PrivateRoute>
+										<PrivateRoute>
 											<Feed />
-										// </PrivateRoute>
+										</PrivateRoute>
+									}
+								/>
+								<Route
+									path={POSTING_PATH}
+									element={
+										<PrivateRoute>
+											<Posting />
+										</PrivateRoute>
 									}
 								/>
 								<Route path={LOGIN_PATH} element={<Login />}/>
-								<Route path='/posting/:postId' element={<Posting/>}/>
 								<Route path="/" element={<Home />}/>
 							</Routes>
 						</BrowserRouter>
