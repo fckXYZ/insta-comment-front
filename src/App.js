@@ -1,49 +1,96 @@
 import {Route, Routes} from 'react-router';
 import {BrowserRouter} from "react-router-dom";
+import {connect} from "react-redux";
 
-import {ToastContainer} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 import './App.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Home from "./containers/Home";
 import Profile from "./containers/profile";
 import Posting from "./containers/posting";
 import Header from "./components/Header";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import Login from "./containers/login";
+import {FEED_PATH, LOGIN_PATH} from "./common/routerConstants";
+import {loginUser} from "./helpers/backend_helper";
+import {loginSuccess} from "./store/user/actions";
 import Loader from "./components/Loader";
+import PrivateRoute from "./components/PrivateRoute";
 
 
-function App() {
+function App(props) {
 
-    useEffect(() => {
-        const username = localStorage.getItem('username');
-        const password = localStorage.getItem('password');
-        if (username && password) {
+	const [loading, setLoading] = useState(false);
 
-        }
-    })
-  return (
-    <div className="App">
-        <Header />
-        <BrowserRouter>
-          <Routes>
-            <Route path='/' element={<Loader />} />
-            <Route path='/posting/:postId' element={<Posting />} />
-          </Routes>
-        </BrowserRouter>
-        <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-        />
-    </div>
-  );
+	useEffect(() => {
+		const username = localStorage.getItem("username")
+		if (username) {
+			const password = ''
+			setLoading(true);
+			loginUser({username, password})
+				.then((data) => {
+					toast.success(data.message);
+					props.loginSuccess({
+						username,
+						password
+					})
+					setLoading(false)
+				})
+				.catch((error) => {
+					localStorage.removeItem('username');
+					toast.warn('Need to log in!');
+					setLoading(false)
+				})
+
+		}
+	}, [])
+
+	return (
+		<div className="App">
+			{
+				loading
+					? <Loader/>
+					: <>
+						<Header/>
+						<BrowserRouter>
+							<Routes>
+								<Route
+									path={FEED_PATH}
+									element={
+										<PrivateRoute>
+											<Profile />
+										</PrivateRoute>
+									}
+								/>
+								<Route path={LOGIN_PATH} element={<Login />}/>
+								<Route path='/posting/:postId' element={<Posting/>}/>
+								<Route path="/" element={<Home />}/>
+							</Routes>
+						</BrowserRouter>
+					</>
+			}
+			<ToastContainer
+				position="top-right"
+				autoClose={5000}
+				hideProgressBar={false}
+				newestOnTop={false}
+				closeOnClick
+				rtl={false}
+				pauseOnFocusLoss
+				draggable
+				pauseOnHover
+			/>
+		</div>
+	);
 }
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+	loginSuccess: (username, password) => dispatch(loginSuccess({username, password})),
+})
+
+export default connect(
+	null,
+	mapDispatchToProps
+)(App);

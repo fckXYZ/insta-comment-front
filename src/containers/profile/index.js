@@ -1,13 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {getFeed, loginUser, submitTwoFA} from "../../helpers/backend_helper";
+import {getFeed} from "../../helpers/backend_helper";
 import Post from "../../components/post";
-import InstaLogin from "../../components/instaLogin";
 import {useNavigate} from "react-router";
 import {toast} from "react-toastify";
 import {Button} from "reactstrap";
 import {loginSuccess, logout} from "../../store/user/actions";
 import {connect} from 'react-redux';
-import ModalTwoFA from "../../components/ModalTwoFA";
 
 const Profile = (props) => {
 
@@ -15,74 +13,12 @@ const Profile = (props) => {
 	const navigate = useNavigate()
 	const [loading, setLoading] = useState(false);
 	const [feed, setFeed] = useState([]);
-	const [modalTwoFaShown, setModalTwoFaShown] = useState(false);
-	const [twoFaProps, setTwoFaProps] = useState({
-		username: '',
-		authIdentifier: '',
-		isSMS: true,
-	})
-
-	const toggleModal = () => {
-		setModalTwoFaShown(!modalTwoFaShown)
-	}
 
 	useEffect(() => {
-		if (storeUsername) {
-			onGetFeed(storeUsername)
-		}
+		// if (storeUsername) {
+		// 	onGetFeed(storeUsername)
+		// }
 	}, [storeUsername]);
-
-	const onLogin = (data) => {
-		const { login, password } = data;
-		setLoading(true)
-		loginUser({ username: login, password })
-			.then((data) => {
-				toast.success(data.message);
-				loginSuccess({
-					username: login, password,
-				})
-				onGetFeed(login)
-				setLoading(false)
-			})
-			.catch((error) => {
-				if (error.status === 403) {
-					toast.warn(error.body.message);
-					setTwoFaProps({
-						username: login,
-						authIdentifier: error.body.two_factor_identifier,
-						isSMS: !error.body.totp_two_factor_on,
-					})
-					setModalTwoFaShown(true);
-					setLoading(false)
-					return
-				}
-				toast.error(error.body.message)
-				setLoading(false)
-			})
-	}
-
-	const onSubmitTwoFa = (code) => {
-		const objForSubmit = {
-			...twoFaProps,
-			code,
-		}
-		setLoading(true)
-		submitTwoFA(objForSubmit)
-			.then((data) => {
-				toast.success(data.message);
-				setModalTwoFaShown(false);
-				setLoading(false);
-				loginSuccess({
-					username: objForSubmit.username,
-					password: '123'
-				})
-				onGetFeed(objForSubmit.username);
-			})
-			.catch((error) => {
-				toast.error(error.body.message);
-				setLoading(false)
-			})
-	}
 
 	const onGetFeed = (login) => {
 		setLoading(true)
@@ -145,22 +81,7 @@ const Profile = (props) => {
 
 	return (
 		<div className="row">
-			{
-				feed.length ?
-					renderFeed()
-					:
-					<InstaLogin
-						onLogin={(d) => onLogin(d)}
-						formDisabled={loading}
-					/>
-
-			}
-			<ModalTwoFA
-				isOpened={modalTwoFaShown}
-				toggle={toggleModal}
-				sendCode={onSubmitTwoFa}
-				disabled={loading}
-			/>
+			{renderFeed()}
 		</div>
 	)
 }
