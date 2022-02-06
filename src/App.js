@@ -1,23 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import {Route, Routes} from 'react-router';
+import {BrowserRouter} from "react-router-dom";
+
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
+import './App.scss';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Profile from "./containers/profile";
+import Posting from "./containers/posting";
+import Header from "./components/Header";
+import {useEffect} from "react";
+import Loader from "./components/Loader";
+
 
 function App() {
+
+    useEffect(() => {
+        const username = localStorage.getItem('username');
+        const password = localStorage.getItem('password');
+        if (username && password) {
+
+        }
+    })
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <Header />
+        <BrowserRouter>
+          <Routes>
+            <Route path='/' element={<Loader />} />
+            <Route path='/posting/:postId' element={<Posting />} />
+          </Routes>
+        </BrowserRouter>
+        <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+        />
     </div>
   );
 }

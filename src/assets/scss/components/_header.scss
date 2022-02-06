@@ -1,0 +1,12 @@
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 16px 32px;
+  background-color: #2c3034;
+  border-bottom: 2px solid #0c4128;
+    span {
+      color: white;
+    }
+}
