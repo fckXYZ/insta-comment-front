@@ -3,11 +3,11 @@ import {getFeed} from "../../helpers/backend_helper";
 import Post from "../../components/post";
 import {useNavigate} from "react-router";
 import {toast} from "react-toastify";
-import {Button} from "reactstrap";
-import {loginSuccess, logout} from "../../store/user/actions";
+import {Col, Row} from "reactstrap";
 import {connect} from 'react-redux';
+import LoadingSpinner from "../../components/Spinner";
 
-const Profile = (props) => {
+const Feed = (props) => {
 
 	const {storeUsername} = props;
 	const navigate = useNavigate()
@@ -15,14 +15,14 @@ const Profile = (props) => {
 	const [feed, setFeed] = useState([]);
 
 	useEffect(() => {
-		// if (storeUsername) {
-		// 	onGetFeed(storeUsername)
-		// }
-	}, [storeUsername]);
+		if (storeUsername) {
+			onGetFeed(storeUsername)
+		}
+	}, []);
 
-	const onGetFeed = (login) => {
+	const onGetFeed = (username) => {
 		setLoading(true)
-		getFeed(login)
+		getFeed(username)
 			.then((data) => {
 				let postsForFeed = [];
 				data.map((postData) => {
@@ -50,22 +50,15 @@ const Profile = (props) => {
 			}})
 	}
 
-	const onLogout = () => {
-		setFeed([]);
-		props.logout()
-	}
-
 	const renderFeed = () => {
+
 		if (!feed.length) {
 			return null
 		}
 
 		return (
-			<>
-				<Button color="danger" style={{ margin: '10px', width: '150px' }} onClick={() => onLogout()}>
-					End Session
-				</Button>
-				<ul>
+			<Col className="col-6 p-4 d-flex flex-column align-items-center m-auto">
+				<ul className="feed-list">
 					{feed.map((postData) => (
 						<Post
 							url={postData.url}
@@ -75,28 +68,21 @@ const Profile = (props) => {
 						/>
 					))}
 				</ul>
-			</>
+			</Col>
 		)
 	}
 
 	return (
-		<div className="row">
-			{renderFeed()}
+		<div className="feed-page">
+			{loading ? <LoadingSpinner /> : renderFeed()}
 		</div>
 	)
 }
 
 const mapStateToProps = ({ user }) => ({
-	username: user.username,
-	password: user.password,
+	storeUsername: user.username,
 });
-
-const mapDispatchToProps = (dispatch) => ({
-	saveUserState: (username, password) => dispatch(loginSuccess({username, password})),
-	logout: () => dispatch(logout()),
-})
 
 export default connect(
 	mapStateToProps,
-	mapDispatchToProps,
-)(Profile);
+)(Feed);

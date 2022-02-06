@@ -5,7 +5,7 @@ const Post = (props) => {
 	const { index, url, id, onClickPost } = props;
 
 	return (
-		<Row className="m-3 p-3 border-3 w-25">
+		<Row className="m-3 p-3 border-3 w-100">
 			<p>
 				Post {index}
 			</p>

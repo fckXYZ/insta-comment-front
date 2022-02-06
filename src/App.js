@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './App.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from "./containers/Home";
-import Profile from "./containers/profile";
+import Feed from "./containers/Feed";
 import Posting from "./containers/posting";
 import Header from "./components/Header";
 import {useEffect, useState} from "react";
@@ -16,7 +16,7 @@ import Login from "./containers/login";
 import {FEED_PATH, LOGIN_PATH} from "./common/routerConstants";
 import {loginUser} from "./helpers/backend_helper";
 import {loginSuccess} from "./store/user/actions";
-import Loader from "./components/Loader";
+import Loader from "./containers/Loader";
 import PrivateRoute from "./components/PrivateRoute";
 
 
@@ -32,10 +32,7 @@ function App(props) {
 			loginUser({username, password})
 				.then((data) => {
 					toast.success(data.message);
-					props.loginSuccess({
-						username,
-						password
-					})
+					props.loginSuccess(username, password)
 					setLoading(false)
 				})
 				.catch((error) => {
@@ -59,9 +56,9 @@ function App(props) {
 								<Route
 									path={FEED_PATH}
 									element={
-										<PrivateRoute>
-											<Profile />
-										</PrivateRoute>
+										// <PrivateRoute>
+											<Feed />
+										// </PrivateRoute>
 									}
 								/>
 								<Route path={LOGIN_PATH} element={<Login />}/>

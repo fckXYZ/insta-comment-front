@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router";
+import {connect} from "react-redux";
 import {Button, Col, Form, FormGroup, Label, Row, Spinner} from "reactstrap";
 import {postHashtags} from "../../helpers/backend_helper";
 import {post} from "../../helpers/api_helper";
@@ -9,6 +10,7 @@ import {getDelay, sleep} from "../../common/delayHelper";
 import MD5 from "crypto-js/md5";
 
 const Posting = (props) => {
+	const {username} = props;
 
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -28,8 +30,6 @@ const Posting = (props) => {
 	const [md5, setMd5] = useState('');
 
 	const onPost = async () => {
-		const username = localStorage.getItem('username');
-		const password = localStorage.getItem('password');
 		if (!calculatedPosts.length) {
 			toast.error("No input data!");
 			return;
@@ -37,7 +37,6 @@ const Posting = (props) => {
 		for await (let post of calculatedPosts) {
 			const requestBody = {
 				username,
-				password,
 				commentText: post.commentText,
 				hashtags: post.hashtags
 			};
@@ -301,4 +300,10 @@ const Posting = (props) => {
 	)
 }
 
-export default Posting;
+const mapStateToProps = ({user}) => ({
+	username: user.username,
+})
+
+export default connect(
+	mapStateToProps
+)(Posting);
